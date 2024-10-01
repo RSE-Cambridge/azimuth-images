@@ -1,4 +1,14 @@
 ---
+  - name: Install pre-requisites
+    ansible.builtin.apt:
+      - dctrl-tools
+      - gcc-12
+      - cpp-12
+      - libgcc-12-dev
+      - libasan8
+      - libtsan2
+      - dkms
+    state: latest    
 
   - name: Install the broadcom driver for NetXtreme-E Ethernet
     ansible.builtin.apt:
