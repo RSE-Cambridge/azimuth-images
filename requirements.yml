@@ -7,13 +7,13 @@ collections:
   # - name: chocolatey.chocolatey
   #   version: 1.2.0
   - name: community.general
-    version: 9.5.0
+    version: 10.1.0
   # - name: community.windows
   #   version: 1.10.0
   - name: containers.podman
-    version: 1.16.1
+    version: 1.16.2
   - name: prometheus.prometheus
-    version: 0.20.1
+    version: 0.23.0
   - name: https://github.com/azimuth-cloud/ansible-collection-image-utils
     type: git
     version: 0.2.0
