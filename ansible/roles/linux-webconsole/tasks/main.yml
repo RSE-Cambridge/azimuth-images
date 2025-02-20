@@ -27,6 +27,20 @@
     name: apptainer
     state: present
 
+- include_role:
+    name: linux-data-volumes
+  vars:
+    data_volumes:
+      - metadata_var: zenith_volume_id
+        mountpoint: /etc/zenith/ssh
+        opts: "defaults,nofail"
+      - metadata_var: data_volume_id
+        mountpoint: /data
+        opts: "defaults,nofail"
+
+- include_role:
+    name: linux-user
+
 - block:
     - include_tasks: desktop.yml
     - include_tasks: vnc_server.yml
@@ -37,28 +51,13 @@
     tasks_from: install.yml
 
 - include_role:
-    name: linux-data-volumes
-  vars:
-    data_volumes:
-      - metadata_var: zenith_volume_id
-        mountpoint: /etc/zenith/ssh
-        opts: "defaults,nofail"
-        owner: podman
-        group: podman
-      - metadata_var: data_volume_id
-        mountpoint: /data
-        opts: "defaults,nofail"
-        owner: azimuth
-        group: azimuth
-
-- include_role:
     name: linux-zenith-ssh
 
 - include_role:
     name: stackhpc.os-manila-mount
     tasks_from: install.yml
   vars:
-    os_manila_mount_ceph_version: '18.2.1' # default debian-reef repo URL currently broken
+    os_manila_mount_ceph_version: '18.2.4' # default debian-reef repo URL currently broken
 
 - include_role:
     name: linux-eessi
