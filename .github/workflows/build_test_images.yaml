@@ -10,7 +10,7 @@ jobs:
       builds: ${{ steps.builds-as-json.outputs.builds }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install script dependencies
         run: pip install -r ./requirements.txt
@@ -34,7 +34,7 @@ jobs:
       security-events: write  # required to upload SARIF files
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -60,7 +60,7 @@ jobs:
           ENV_VAR_FILES: ${{ matrix.var-files }}
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3.4.0
+        uses: sigstore/cosign-installer@v3
 
       - name: Publish image
         id: publish-image
@@ -87,28 +87,8 @@ jobs:
       - name: mount qcow2 file
         run: sudo guestmount -a ${{ steps.publish-image.outputs.image-name }}.qcow2 -i --ro -o allow_other './${{ steps.publish-image.outputs.image-name }}'
 
-#      - name: Run Trivy vulnerability scanner
-#        uses: aquasecurity/trivy-action@0.24.0
-#        with:
-#          scan-type: fs
-#          scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
-#          scanners: "vuln"
-#          format: sarif
-#          output: "${{ steps.publish-image.outputs.image-name }}.sarif"
-#          # limit to high and critical as we get too many results for GH security otherwise
-#          limit-severities-for-sarif: 'true'
-#          severity: 'HIGH,CRITICAL'
-#        env:
-#          TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
-
-#      - name: Upload Trivy scan results to GitHub Security tab
-#        uses: github/codeql-action/upload-sarif@v3
-#        with:
-#          sarif_file: "${{ steps.publish-image.outputs.image-name }}.sarif"
-#          category: "${{ matrix.name }}"
-
       - name: Fail if scan has CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           scan-type: fs
           scan-ref: "./${{ steps.publish-image.outputs.image-name }}"
@@ -117,11 +97,12 @@ jobs:
           exit-code: '1'
           severity: 'CRITICAL'
           ignore-unfixed: true
+          trivyignores: .github/.trivyignore
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/azimuth-cloud/trivy-db:2
 
       - name: Write matrix outputs
-        uses: cloudposse/github-action-matrix-outputs-write@0.4.2
+        uses: cloudposse/github-action-matrix-outputs-write@v1
         with:
           matrix-step-name: ${{ github.job }}
           matrix-key: ${{ matrix.name }}
@@ -145,12 +126,12 @@ jobs:
 
       - name: Read matrix outputs
         id: matrix-outputs
-        uses: cloudposse/github-action-matrix-outputs-read@0.1.1
+        uses: cloudposse/github-action-matrix-outputs-read@v1
         with:
           matrix-step-name: build_images
 
       - name: Write outputs
-        uses: DamianReeves/write-file-action@0a7fcbe1960c53fc08fe789fa4850d24885f4d84
+        uses: DamianReeves/write-file-action@v1.3
         with:
           path: build-outputs.json
           write-mode: overwrite
@@ -225,6 +206,7 @@ jobs:
             generate_tests_caas_test_case_slurm_enabled: false
             generate_tests_kubernetes_test_cases_latest_only: false
             generate_tests_kubernetes_apps_suite_enabled: false
+            generate_tests_caas_test_case_repo2docker_service_repo2docker_expected_title: Home
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before they can finish
         # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job
@@ -246,7 +228,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install s3cmd
         run: |
