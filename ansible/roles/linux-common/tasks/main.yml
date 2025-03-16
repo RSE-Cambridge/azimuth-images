@@ -19,6 +19,9 @@
 - include_role:
     name: linux-volumes-by-tag
 
+- include_tasks: intel-pvc.yml
+  when: enable_pvc
+
 # Install the Broadcom network driver for NetXtreme-E Ethernet
 - include_role:
     name: linux-broadcom

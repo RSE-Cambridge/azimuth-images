@@ -1,0 +1,32 @@
+
+---
+- name: Install dependencies
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - gpg-agent
+      - wget
+    state: latest
+
+- name: Add an Apt signing key, uses whichever key is at the URL
+  ansible.builtin.apt_key:
+    url: https://repositories.intel.com/gpu/intel-graphics.key
+    state: present
+
+- name: Enable Intel PVC repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://repositories.intel.com/gpu/ubuntu {{ ansible_distribution_release }}/lts/2350 unified"
+    state: present
+    update_cache: true
+
+- name: Install PVC packages
+  ansible.builtin.apt:
+    pkg:
+      - linux-headers-generic
+      - linux-image-generic
+      - flex
+      - bison
+      - intel-fw-gpu
+      - intel-i915-dkms
+      - xpu-smi
+    state: latest
