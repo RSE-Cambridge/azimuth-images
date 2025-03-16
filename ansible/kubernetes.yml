@@ -3,7 +3,7 @@
 - hosts: all
   become: yes
   vars:
-    enable_pvc: true
+    enable_pvc: false
   roles:
     - linux-common
 
